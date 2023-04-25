@@ -70,4 +70,32 @@ class RegisterRequestTest {
         assertThat(violations).isNotEmpty();
     }
 
+    @DisplayName("이메일이 빈 문자열이면 요청 실패")
+    @Test
+    void blank_email_fail() {
+        RegisterRequest request = RegisterRequest.builder()
+                .email("")
+                .password("password")
+                .nickname("nickname")
+                .build();
+
+        var violations = validator.validate(request);
+
+        assertThat(violations).isNotEmpty();
+    }
+
+    @DisplayName("이메일이 형식에 맞지 않다면 요청 실패")
+    @Test
+    void invalid_pattern_email_fail() {
+        RegisterRequest request = RegisterRequest.builder()
+                .email("test")
+                .password("password")
+                .nickname("nickname")
+                .build();
+
+        var violations = validator.validate(request);
+
+        assertThat(violations).isNotEmpty();
+    }
+
 }
