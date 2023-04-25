@@ -140,4 +140,18 @@ class RegisterRequestTest {
         assertThat(violations).isNotEmpty();
     }
 
+    @DisplayName("닉네임에 한글, 영어, 숫자 외의 문자가 있으면 요청 실패")
+    @Test
+    void invalid_character_in_nickname_fail() {
+        RegisterRequest request = RegisterRequest.builder()
+                .email("test@test.com")
+                .password("password")
+                .nickname("***")
+                .build();
+
+        var violations = validator.validate(request);
+
+        assertThat(violations).isNotEmpty();
+    }
+
 }
