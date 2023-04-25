@@ -1,5 +1,6 @@
 package com.devdive.studylog.auth.api.rest.dto;
 
+import com.devdive.studylog.validation.ValidationGroups;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
@@ -79,9 +80,12 @@ class RegisterRequestTest {
                 .nickname("nickname")
                 .build();
 
-        var violations = validator.validate(request);
+        var violations = validator.validate(request, ValidationGroups.First.class);
 
         assertThat(violations).isNotEmpty();
+        violations.forEach(e -> {
+            assertThat(e.getMessage()).isEqualTo("이메일을 입력해주세요.");
+        });
     }
 
     @DisplayName("이메일이 형식에 맞지 않다면 요청 실패")
@@ -96,6 +100,9 @@ class RegisterRequestTest {
         var violations = validator.validate(request);
 
         assertThat(violations).isNotEmpty();
+        violations.forEach(e -> {
+            assertThat(e.getMessage()).isEqualTo("이메일 형식에 맞지 않습니다.");
+        });
     }
 
     @DisplayName("닉네임이 빈 문자열이면 요청 실패")
@@ -107,9 +114,12 @@ class RegisterRequestTest {
                 .nickname("")
                 .build();
 
-        var violations = validator.validate(request);
+        var violations = validator.validate(request, ValidationGroups.First.class);
 
         assertThat(violations).isNotEmpty();
+        violations.forEach(exception -> {
+            assertThat(exception.getMessage()).isEqualTo("닉네임을 입력해주세요.");
+        });
     }
 
     @DisplayName("닉네임이 너무 짧으면 요청 실패")
@@ -121,9 +131,12 @@ class RegisterRequestTest {
                 .nickname("1")
                 .build();
 
-        var violations = validator.validate(request);
+        var violations = validator.validate(request, ValidationGroups.Second.class);
 
         assertThat(violations).isNotEmpty();
+        violations.forEach(e -> {
+            assertThat(e.getMessage()).contains("닉네임의 길이는 2 ~ 14 사이입니다.");
+        });
     }
 
     @DisplayName("닉네임이 너무 길면 요청 실패")
@@ -135,9 +148,12 @@ class RegisterRequestTest {
                 .nickname("a".repeat(15))
                 .build();
 
-        var violations = validator.validate(request);
+        var violations = validator.validate(request, ValidationGroups.Second.class);
 
         assertThat(violations).isNotEmpty();
+        violations.forEach(e -> {
+            assertThat(e.getMessage()).contains("닉네임의 길이는 2 ~ 14 사이입니다.");
+        });
     }
 
     @DisplayName("닉네임에 한글, 영어, 숫자 외의 문자가 있으면 요청 실패")
@@ -152,6 +168,9 @@ class RegisterRequestTest {
         var violations = validator.validate(request);
 
         assertThat(violations).isNotEmpty();
+        violations.forEach(e -> {
+            assertThat(e.getMessage()).isEqualTo("닉네임은 한글, 영어, 숫자만 사용할 수 있습니다.");
+        });
     }
 
 }
