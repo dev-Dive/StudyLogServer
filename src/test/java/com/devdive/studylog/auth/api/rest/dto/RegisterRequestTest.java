@@ -98,4 +98,46 @@ class RegisterRequestTest {
         assertThat(violations).isNotEmpty();
     }
 
+    @DisplayName("닉네임이 빈 문자열이면 요청 실패")
+    @Test
+    void blank_nickname_fail() {
+        RegisterRequest request = RegisterRequest.builder()
+                .email("test@test.com")
+                .password("password")
+                .nickname("")
+                .build();
+
+        var violations = validator.validate(request);
+
+        assertThat(violations).isNotEmpty();
+    }
+
+    @DisplayName("닉네임이 너무 짧으면 요청 실패")
+    @Test
+    void short_nickname_fail() {
+        RegisterRequest request = RegisterRequest.builder()
+                .email("test@test.com")
+                .password("password")
+                .nickname("1")
+                .build();
+
+        var violations = validator.validate(request);
+
+        assertThat(violations).isNotEmpty();
+    }
+
+    @DisplayName("닉네임이 너무 길면 요청 실패")
+    @Test
+    void long_nickname_fail() {
+        RegisterRequest request = RegisterRequest.builder()
+                .email("test@test.com")
+                .password("password")
+                .nickname("a".repeat(15))
+                .build();
+
+        var violations = validator.validate(request);
+
+        assertThat(violations).isNotEmpty();
+    }
+
 }
