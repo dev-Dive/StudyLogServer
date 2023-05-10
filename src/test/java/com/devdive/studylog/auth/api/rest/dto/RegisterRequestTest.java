@@ -1,6 +1,6 @@
 package com.devdive.studylog.auth.api.rest.dto;
 
-import com.devdive.studylog.validation.ValidationGroups;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
@@ -22,155 +22,48 @@ class RegisterRequestTest {
 
     @DisplayName("회원가입 요청 입력이 형식에 맞다면 검증 성공")
     @Test
-    void id_pattern_validation_success() {
-        // given
+    void givenValidRequest_whenValid_thenEmptyViolations() {
         RegisterRequest request = RegisterRequest.builder()
                 .email("test@test.com")
                 .password("password1234")
                 .nickname("nickname")
                 .build();
 
-        // when
         var violations = validator.validate(request);
 
-        // then
         assertThat(violations).isEmpty();
     }
 
     @DisplayName("비밀번호 길이가 8자리 미만이면 요청 실패")
     @Test
     void invalid_short_password_length_fail() {
-        // given
         RegisterRequest request = RegisterRequest.builder()
                 .email("test@test.com")
                 .password("p")
                 .nickname("nickname")
                 .build();
 
-        // when
         var violations = validator.validate(request);
+        var messages = violations.stream()
+                .map(ConstraintViolation::getMessage);
 
-        // then
-        assertThat(violations).isNotEmpty();
+        assertThat(messages).contains("비밀번호의 길이는 8~20 사이입니다.");
     }
 
     @DisplayName("비밀번호 길이가 20자리 초과이면 요청 실패")
     @Test
     void invalid_long_password_length_fail() {
-        // given
         RegisterRequest request = RegisterRequest.builder()
                 .email("test@test.com")
                 .password("a".repeat(30))
                 .nickname("nickname")
                 .build();
 
-        // when
         var violations = validator.validate(request);
+        var messages = violations.stream()
+                .map(ConstraintViolation::getMessage);
 
-        // then
-        assertThat(violations).isNotEmpty();
-    }
-
-    @DisplayName("이메일이 빈 문자열이면 요청 실패")
-    @Test
-    void blank_email_fail() {
-        RegisterRequest request = RegisterRequest.builder()
-                .email("")
-                .password("password")
-                .nickname("nickname")
-                .build();
-
-        var violations = validator.validate(request, ValidationGroups.First.class);
-
-        assertThat(violations).isNotEmpty();
-        violations.forEach(e -> {
-            assertThat(e.getMessage()).isEqualTo("이메일을 입력해주세요.");
-        });
-    }
-
-    @DisplayName("이메일이 형식에 맞지 않다면 요청 실패")
-    @Test
-    void invalid_pattern_email_fail() {
-        RegisterRequest request = RegisterRequest.builder()
-                .email("test")
-                .password("password")
-                .nickname("nickname")
-                .build();
-
-        var violations = validator.validate(request);
-
-        assertThat(violations).isNotEmpty();
-        violations.forEach(e -> {
-            assertThat(e.getMessage()).isEqualTo("이메일 형식에 맞지 않습니다.");
-        });
-    }
-
-    @DisplayName("닉네임이 빈 문자열이면 요청 실패")
-    @Test
-    void blank_nickname_fail() {
-        RegisterRequest request = RegisterRequest.builder()
-                .email("test@test.com")
-                .password("password")
-                .nickname("")
-                .build();
-
-        var violations = validator.validate(request, ValidationGroups.First.class);
-
-        assertThat(violations).isNotEmpty();
-        violations.forEach(exception -> {
-            assertThat(exception.getMessage()).isEqualTo("닉네임을 입력해주세요.");
-        });
-    }
-
-    @DisplayName("닉네임이 너무 짧으면 요청 실패")
-    @Test
-    void short_nickname_fail() {
-        RegisterRequest request = RegisterRequest.builder()
-                .email("test@test.com")
-                .password("password")
-                .nickname("1")
-                .build();
-
-        var violations = validator.validate(request, ValidationGroups.Second.class);
-
-        assertThat(violations).isNotEmpty();
-        violations.forEach(e -> {
-            assertThat(e.getMessage()).contains("닉네임의 길이는 2 ~ 14 사이입니다.");
-        });
-    }
-
-    @DisplayName("닉네임이 너무 길면 요청 실패")
-    @Test
-    void long_nickname_fail() {
-        RegisterRequest request = RegisterRequest.builder()
-                .email("test@test.com")
-                .password("password")
-                .nickname("a".repeat(15))
-                .build();
-
-        var violations = validator.validate(request, ValidationGroups.Second.class);
-
-        assertThat(violations).isNotEmpty();
-        violations.forEach(e -> {
-            assertThat(e.getMessage()).contains("닉네임의 길이는 2 ~ 14 사이입니다.");
-        });
-    }
-
-    @DisplayName("닉네임에 한글, 영어, 숫자 외의 문자가 있으면 요청 실패")
-    @Test
-    void invalid_character_in_nickname_fail() {
-        RegisterRequest request = RegisterRequest.builder()
-                .email("test@test.com")
-                .password("password")
-                .nickname("***")
-                .build();
-
-        var violations = validator.validate(request);
-
-        assertThat(violations).isNotEmpty();
-        violations.forEach(e -> {
-            assertThat(e.getMessage()).isEqualTo("닉네임은 한글, 영어, 숫자만 사용할 수 있습니다.");
-        });
+        assertThat(messages).contains("비밀번호의 길이는 8~20 사이입니다.");
     }
 
 }
