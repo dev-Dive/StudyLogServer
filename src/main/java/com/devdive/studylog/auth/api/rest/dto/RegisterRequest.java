@@ -10,6 +10,8 @@ public record RegisterRequest(
         String email,
         @Size(min = 8, max = 20, message = "비밀번호의 길이는 {min}~{max} 사이입니다.")
         String password,
+        @NotBlank(message = "닉네임을 입력해주세요.")
+        @Size(min = 2, max = 14, message = "닉네임의 길이는 {min}~{max} 사이입니다.")
         String nickname
 ) {
 }

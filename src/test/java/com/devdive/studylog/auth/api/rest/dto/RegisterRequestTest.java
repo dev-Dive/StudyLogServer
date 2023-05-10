@@ -98,4 +98,52 @@ class RegisterRequestTest {
         assertThat(messages).contains("이메일 형식에 맞지 않습니다.");
     }
 
+    @DisplayName("닉네임이 빈 문자열이면 요청 실패")
+    @Test
+    void blank_nickname_fail() {
+        RegisterRequest request = RegisterRequest.builder()
+                .email("test@test.com")
+                .password("password")
+                .nickname("")
+                .build();
+
+        var violations = validator.validate(request);
+        var messages = violations.stream()
+                .map(ConstraintViolation::getMessage);
+
+        assertThat(messages).contains("닉네임을 입력해주세요.");
+    }
+
+    @DisplayName("닉네임이 너무 짧으면 요청 실패")
+    @Test
+    void short_nickname_fail() {
+        RegisterRequest request = RegisterRequest.builder()
+                .email("test@test.com")
+                .password("password")
+                .nickname("1")
+                .build();
+
+        var violations = validator.validate(request);
+        var messages = violations.stream()
+                .map(ConstraintViolation::getMessage);
+
+        assertThat(messages).contains("닉네임의 길이는 2~14 사이입니다.");
+    }
+
+    @DisplayName("닉네임이 너무 길면 요청 실패")
+    @Test
+    void long_nickname_fail() {
+        RegisterRequest request = RegisterRequest.builder()
+                .email("test@test.com")
+                .password("password")
+                .nickname("a".repeat(15))
+                .build();
+
+        var violations = validator.validate(request);
+        var messages = violations.stream()
+                .map(ConstraintViolation::getMessage);
+
+        assertThat(messages).contains("닉네임의 길이는 2~14 사이입니다.");
+    }
+
 }
