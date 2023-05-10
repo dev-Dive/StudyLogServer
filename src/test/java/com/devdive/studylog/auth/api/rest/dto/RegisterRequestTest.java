@@ -66,4 +66,36 @@ class RegisterRequestTest {
         assertThat(messages).contains("비밀번호의 길이는 8~20 사이입니다.");
     }
 
+    @DisplayName("이메일이 빈 문자열이면 요청 실패")
+    @Test
+    void blank_email_fail() {
+        RegisterRequest request = RegisterRequest.builder()
+                .email("")
+                .password("password")
+                .nickname("nickname")
+                .build();
+
+        var violations = validator.validate(request);
+        var messages = violations.stream()
+                .map(ConstraintViolation::getMessage);
+
+        assertThat(messages).contains("이메일을 입력해주세요.");
+    }
+
+    @DisplayName("이메일이 형식에 맞지 않다면 요청 실패")
+    @Test
+    void invalid_pattern_email_fail() {
+        RegisterRequest request = RegisterRequest.builder()
+                .email("test")
+                .password("password")
+                .nickname("nickname")
+                .build();
+
+        var violations = validator.validate(request);
+        var messages = violations.stream()
+                .map(ConstraintViolation::getMessage);
+
+        assertThat(messages).contains("이메일 형식에 맞지 않습니다.");
+    }
+
 }
