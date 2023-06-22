@@ -1,10 +1,28 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
   datasource:
     url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/study_log
     username: root
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+        web: DEBUG
+    com:
+      devdive:
+        studylog:
+          auth: DEBUG
+auth:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY:3273357638792F423F4528482B4D6251655368566D597133743677397A244326}
